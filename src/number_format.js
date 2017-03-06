@@ -7,6 +7,7 @@ function escapeRegExp(str) {
 
 const propTypes = {
   thousandSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
+  indianFormat: PropTypes.bool,
   decimalSeparator: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   decimalPrecision: PropTypes.oneOfType([PropTypes.number, PropTypes.bool]),
   displayType: PropTypes.oneOf(['input', 'text']),
@@ -25,6 +26,7 @@ const propTypes = {
 };
 
 const defaultProps = {
+  indianFormat: true,
   displayType: 'input',
   decimalSeparator: '.',
   decimalPrecision: false
@@ -121,7 +123,7 @@ class NumberFormat extends React.Component {
   }
 
   formatInput(val) {
-    const {prefix, suffix, mask, format} = this.props;
+    const {prefix, suffix, mask, format, indianFormat} = this.props;
     const {thousandSeparator, decimalSeparator} = this.getSeparators();
     const {decimalPrecision} = this.props;
     const maskPattern = format && typeof format == 'string' && !!mask;
@@ -159,7 +161,11 @@ class NumberFormat extends React.Component {
         afterDecimal = parts[1];
       }
       if(thousandSeparator) {
-        beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
+        if ( indianFormat === true ) {
+          beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d\d)+\d$)/g, '$1' + thousandSeparator);
+        } else {
+          beforeDecimal = beforeDecimal.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1' + thousandSeparator);
+        }
       }
       //add prefix and suffix
       if(prefix) beforeDecimal = prefix + beforeDecimal;
